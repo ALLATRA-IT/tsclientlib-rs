@@ -12,6 +12,7 @@
 // Needed for futures on windows.
 #![recursion_limit = "128"]
 
+use std::borrow::Cow;
 use std::collections::HashMap;
 use std::fmt;
 use std::marker::PhantomData;
@@ -363,7 +364,7 @@ impl Connection {
 					("client_nickname_phonetic", ""),
 					("client_key_offset", &counter),
 					("client_default_token", ""),
-					("hwid", "923f136fb1e22ae6ce95e60255529c00,d13231b1bc33edfecfb9169cc7a63bcc"),
+					("hwid", &opts.hwid),
 				];
 
 				if let Some(channel) = &opts.channel {
@@ -1084,6 +1085,7 @@ pub struct ConnectOptions {
 	identity: Option<Identity>,
 	name: String,
 	version: Version,
+	hwid: Cow<'static, str>,
 	channel: Option<String>,
 	logger: Option<Logger>,
 	log_commands: bool,
@@ -1116,6 +1118,7 @@ impl ConnectOptions {
 			identity: None,
 			name: String::from("TeamSpeakUser"),
 			version: Version::Windows_3_X_X__1,
+			hwid: "923f136fb1e22ae6ce95e60255529c00,d13231b1bc33edfecfb9169cc7a63bcc".into(),
 			channel: None,
 			logger: None,
 			log_commands: false,
@@ -1165,6 +1168,16 @@ impl ConnectOptions {
 	#[inline]
 	pub fn version(mut self, version: Version) -> Self {
 		self.version = version;
+		self
+	}
+
+	/// The HWID (hardware ID) of the client.
+	///
+	/// # Default
+	/// `923f136fb1e22ae6ce95e60255529c00,d13231b1bc33edfecfb9169cc7a63bcc`
+	#[inline]
+	pub fn hwid<S: Into<Cow<'static, str>>>(mut self, hwid: S) -> Self {
+		self.hwid = hwid.into();
 		self
 	}
 
@@ -1311,6 +1324,7 @@ impl fmt::Debug for ConnectOptions {
 			identity,
 			name,
 			version,
+			hwid,
 			channel,
 			logger,
 			log_commands,
@@ -1323,13 +1337,14 @@ impl fmt::Debug for ConnectOptions {
 		write!(
 			f,
 			"ConnectOptions {{ address: {:?}, local_address: {:?}, identity: \
-			 {:?}, name: {}, version: {}, channel: {:?}, logger: {:?}, \
+			 {:?}, name: {}, version: {}, hwid: {}, channel: {:?}, logger: {:?}, \
 			 log_commands: {}, log_packets: {}, log_udp_packets: {},",
 			address,
 			local_address,
 			identity,
 			name,
 			version,
+			hwid,
 			channel,
 			logger,
 			log_commands,
