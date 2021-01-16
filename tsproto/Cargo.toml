@@ -26,7 +26,7 @@ bitflags = "1"
 omnom = "3"
 curve25519-dalek = "3"
 #eax = "0.2.0-pre"
-eax = { git = "https://github.com/RustCrypto/AEADs" }
+eax = { git = "https://github.com/RustCrypto/AEADs", rev = "3cf1ba3858f8ef3c9a7320328313596eada487ed" }
 flakebi-ring = "0.16.15"
 futures = "0.3"
 generic-array = "0.14"
